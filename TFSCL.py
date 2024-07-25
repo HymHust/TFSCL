@@ -26,12 +26,6 @@ def FFTLayer(x):
     return x_abs
 
 
-
-def Final_loss(y_true, y_pred,f1,f2):
-    loss=K.mean(CLoss(f1, f2) + K.binary_crossentropy(y_true,y_pred))
-    return loss
-
-
 def Scos(f1, f2):
     f1 = tf.math.l2_normalize(f1, axis=1)
     f2 = tf.math.l2_normalize(f2, axis=1)
@@ -115,7 +109,7 @@ def TFSCL(x_shape=(5120,10)):
 
     model = Model(inputs=inputs_x, outputs=y_pred)
     adam = adam_v2.Adam(learning_rate=0.001)
-    model.compile(optimizer=adam)
+    model.compile(optimizer=adam,loss='binary_crossentropy', metrics='acc')
 
     model.summary()
     plot_model(model=model, to_file='TFSCL_model.png', show_shapes=True)
@@ -135,7 +129,6 @@ def Train_Eval():
     model.fit([x_train,y_train],batch_size=64, epochs=20,shuffle=True,verbose=1, callbacks=callback_list)
     model.load_weights('propose.hdf5')
 
-    # 搭建评估模型
 
     pred_model = Model(inputs=model.get_layer('x_train').input,outputs=model.get_layer('output').output)
 
